@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#283ee9">
+  <meta name="description" content="Entre no escritório virtual da Connect Promo. Explore seis ambientes em pixel art, conheça nossa identidade e organize sua equipe.">
+  <title>Connect Promo — Escritório Virtual</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <header class="header">
+    <a href="#escritorio" class="brand" aria-label="Connect Promo, início"><span class="brand-crop"><img src="assets/logo.jpeg" alt="Connect Promo" width="1280" height="853"></span></a>
+    <div class="brand-caption">ESCRITÓRIO<br><b>VIRTUAL</b></div>
+    <nav class="top-nav" aria-label="Navegação principal">
+      <a href="#escritorio" data-page="escritorio" class="active">Escritório</a>
+      <a href="#equipe" data-page="equipe">Equipe</a>
+      <a href="#reunioes" data-page="reunioes">Reuniões</a>
+      <a href="#showroom" data-page="showroom">Showroom</a>
+    </nav>
+    <div class="header-right"><span class="header-status"><i></i> Seu espaço digital</span><button class="profile" data-action="room-yuri" aria-label="Conhecer a sala do Yuri"><span class="avatar">Y</span><span>Yuri<small>Diretoria</small></span></button></div>
+  </header>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Ambientes do escritório">
+      <div class="sidebar-label">NOSSO ESCRITÓRIO</div>
+      <button class="overview selected" data-action="overview"><span data-icon="grid"></span> Visão geral <span class="shortcut">⌂</span></button>
+      <div class="sidebar-label rooms-heading">EXPLORE OS AMBIENTES <span>06</span></div>
+      <nav id="room-nav" class="room-nav" aria-label="Selecione um ambiente"></nav>
+      <div class="sidebar-bottom"><div class="mini-building" aria-hidden="true"><span></span><span></span><span></span></div><p>Um novo ponto de vista.<br><strong>A mesma conexão.</strong></p><div class="sidebar-divider"></div><div class="local-clock"><span data-icon="sun"></span><span id="clock">São Paulo</span></div><small>Horário de Brasília</small></div>
+    </aside>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <footer class="footer"><span>Connect Promo <span class="footer-dot">·</span> Ideias que conectam.</span><span>Um escritório, muitas possibilidades.</span></footer>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
