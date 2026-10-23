@@ -18,7 +18,7 @@ if(!target.startsWith(repository+path.sep)||target===source)throw new Error('O d
 const existing=await lstat(target).catch(()=>null);
 if(existing?.isSymbolicLink()||(existing&&!existing.isDirectory()))throw new Error('A pasta de destino não pode ser um link ou arquivo.');
 await mkdir(target,{recursive:true});
-const files=['README.md','AGENTS.md','OPERACAO.md','image-prompt.txt','preview.mjs','prepare-github.mjs','office.test.mjs','operations.test.mjs','package.json','package-lock.json','next.config.ts','tsconfig.json','postcss.config.mjs','vite.config.ts','drizzle.config.ts','cloudflare-env.d.ts'];
+const files=['README.md','AGENTS.md','OPERACAO.md','image-prompt.txt','preview.mjs','prepare-github.mjs','office.test.mjs','operations.test.mjs','world.test.mjs','package.json','package-lock.json','next.config.ts','tsconfig.json','postcss.config.mjs','vite.config.ts','drizzle.config.ts','cloudflare-env.d.ts'];
 async function collect(relative){
   for(const entry of await readdir(path.join(source,relative),{withFileTypes:true})){
     const next=path.join(relative,entry.name);

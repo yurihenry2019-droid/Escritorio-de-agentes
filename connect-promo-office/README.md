@@ -1,6 +1,8 @@
 # Connect Promo · Escritório Virtual
 
-Escritório isométrico com seis ambientes, identidade visual da Connect Promo e personagens em movimento. A aba **Atividade** apresenta registros reais e agregados das rotinas do Codex: consultas à caixa postal, respostas confirmadas, apresentações, contatos verificados e verificações do site.
+Escritório isométrico desenhado e animado em Canvas, com seis ambientes, móveis independentes e oito personagens controláveis (Yuri e sete funções virtuais). A cena não usa a antiga ilustração como fundo. A aba **Atividade** apresenta registros reais e agregados das rotinas do Codex: consultas à caixa postal, respostas confirmadas, apresentações, contatos verificados e verificações do site.
+
+Clique em um personagem ou selecione-o em **Controlar**, depois clique em um ponto livre do chão. As setas do teclado também movimentam o personagem quando o ambiente está focado. Os botões **Ir para** calculam o caminho por portas, contornando móveis e paredes. Arraste a cena para deslocar a câmera; use +, − e Centralizar para ajustar a vista. **Reunir avatares** leva os personagens à sala de reunião; esse comando visual não dispara o briefing ou ações externas. **Circulação** ativa os passeios automáticos. **Abrir ambiente** acessa as ferramentas da sala.
 
 ## Funcionamento
 
@@ -26,7 +28,7 @@ As tarefas manuais não são uma fila de execução automática. Pausar uma fun�
 
 Node.js 22.13 ou superior. Instale com `npm run install:ci`, compile com `npm run build` e use `npm start` para a prévia completa do Worker. A identidade do site e o vínculo D1 são mantidos pela habilidade Sites em `.openai/hosting.json`, configuração privada não distribuída no GitHub. Em uma cópia, configure uma hospedagem própria seguindo Sites antes de executar o servidor; nunca reutilize credenciais de outra conta.
 
-`public/` contém a interface; `app/` encaminha a entrada; `worker/office.ts` implementa a API; `lib/office-policy.mjs` valida os registros; `db/` e `drizzle/` definem o banco. O build usa Vinext e Cloudflare Workers. `dist/` é saída gerada. Para consultar só o visual, sem histórico de servidor, execute `node preview.mjs` e abra http://127.0.0.1:4321.
+`public/` contém a interface; `office-world.js` define salas, obstáculos, projeção e caminhos; `office-scene.js` desenha os elementos e processa interação e movimento. `app/` encaminha a entrada; `worker/office.ts` implementa a API; `lib/office-policy.mjs` valida os registros; `db/` e `drizzle/` definem o banco. O build usa Vinext e Cloudflare Workers. `dist/` é saída gerada. Para consultar só o visual, sem histórico de servidor, execute `node preview.mjs` e abra http://127.0.0.1:4321.
 
 O segredo `OFFICE_RUNNER_TOKEN` existe somente no ambiente de hospedagem e na configuração local ignorada `.office-runtime/config.json`. O helper `scripts/office-bridge.mjs` envia registros à origem fixa do escritório. Reservas de execução impedem duas rotinas deste escritório de enviar mensagens simultaneamente. O limite comercial também é verificado na própria caixa postal, imediatamente antes de cada envio.
 
