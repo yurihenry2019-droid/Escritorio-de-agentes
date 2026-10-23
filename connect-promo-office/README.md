@@ -1,44 +1,41 @@
 # Connect Promo · Escritório Virtual
 
-Escritório isométrico navegável com a identidade visual fornecida pela Connect Promo.
+Escritório isométrico com seis ambientes, identidade visual da Connect Promo e personagens em movimento. A aba **Atividade** apresenta registros reais e agregados das rotinas do Codex: consultas à caixa postal, respostas confirmadas, apresentações, contatos verificados e verificações do site.
 
-- Seis ambientes clicáveis e tour guiado.
-- Cadastro e edição de equipe, registros de reuniões e exportação das notas.
-- Showroom com frente e costas do uniforme e download do logo original.
-- Jogo da memória na sala de descompressão.
-- Layout responsivo, navegação por teclado e preferência por movimento reduzido.
-- Sete sistemas de trabalho por função virtual, com tarefas, prioridade, prazo, situação e resultado.
-- Reunião diária às 15h de Brasília, pauta e exportação de agenda recorrente (.ics).
+## Funcionamento
 
-## Funções e reunião diária
+O Codex executa o trabalho com a conexão nativa da Hostinger. O servidor do site recebe somente função, código de ação, estado, contagem e horário. O histórico público não contém mensagens, destinatários, anexos ou credenciais. A animação representa a circulação no escritório; o histórico informa o trabalho efetivamente registrado. O site não abre sessões da Hostinger nem acessa a caixa postal por conta própria.
 
-Gerência/operações, marketing, comercial/prospecção, e-mail comercial, atendimento, financeiro e evolução do site têm missões, etapas de trabalho e entregas próprias. São funções virtuais escolhidas pelo usuário, não cadastros de pessoas reais contratadas. Pausar uma função impede novas atribuições e preserva suas tarefas. Uma tarefa só pode ser concluída com o resultado registrado.
+O usuário autorizou responder clientes e enviar até cinco apresentações por dia a novos contatos comerciais públicos. O limite usa o dia de Brasília e inclui apresentações enviadas fora da rotina. Os procedimentos para checar duplicidade, descadastros, confirmar envios e suspender ações incertas estão em `OPERACAO.md`.
 
-A pauta diária cobre melhorias, prioridades, investimentos, necessidade de contratação e retornos comerciais. O compromisso das 15h aparece na sala de reunião; a agenda pode ser importada em um calendário. O briefing automático foi configurado separadamente na conversa do Codex, com execução diária às 15h no horário local de São Paulo. O site não consulta o estado dessa automação nem recebe seus relatórios automaticamente. Copiar o projeto para outra conta não cria a automação.
+As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem, e dependem da disponibilidade do Codex e das conexões. Copiar o projeto não cria rotinas nem fornece acesso a contas. Esta operação usa os recursos de IA do Codex; não exige uma chave separada da API da OpenAI. Não há contratação, pagamento ou decisão de investimento automática.
 
-O botão “Baixar pauta” exporta as tarefas deste navegador para compartilhar na conversa. Os textos de trabalho são adaptações originais dos conceitos dos materiais de referência fornecidos pelo usuário; os PDFs não são redistribuídos no repositório.
+## Ferramentas do escritório
 
-## Uso local
+- Recepção, diretoria do Yuri, equipe, reunião, jogos e showroom navegáveis.
+- Sete funções virtuais, sem inventar pessoas contratadas.
+- Movimento opcional, respeitando a preferência inicial por movimento reduzido.
+- Histórico no servidor, atualizado na tela a cada 30 segundos, com falhas de consulta visíveis.
+- Cadastro de equipe, tarefas, notas e pautas manuais guardados no navegador.
+- Reunião das 15h de Brasília, pauta exportável e agenda .ics; o briefing recorrente permanece na conversa do Codex.
+- Uniformes originais, download do logo, tour e jogo da memória.
 
-Com Node.js disponível, execute `node preview.mjs` e abra `http://127.0.0.1:4321`.
-O conteúdo publicado está em `dist/`, sem dependências de compilação.
+As tarefas manuais não são uma fila de execução automática. Pausar uma função no cadastro não pausa uma rotina do Codex; as rotinas devem ser gerenciadas na conversa. Dados locais não são compartilhados entre dispositivos e não são enviados ao GitHub. Finanças e contratações precisam de dados reais e decisões do usuário.
 
-## Dados e escopo
+## Fonte e execução local
 
-Os cadastros e tarefas ficam no localStorage do navegador, separados por origem. Não existe autenticação própria, banco de dados compartilhado, envio de convites, videoconferência nem execução de agentes de IA dentro do site nesta versão. A configuração segura da chave de IA foi iniciada, mas ainda depende da conclusão do fluxo pelo usuário. Não há chamadas de IA, e-mail, pagamento, contratação ou publicação disparadas pelos botões de tarefas. O controle de acesso da hospedagem é fornecido pelo Sites. Os personagens na ilustração não representam os cadastros reais; apenas Yuri foi incluído no cadastro de pessoas conforme o pedido.
+Node.js 22.13 ou superior. Instale com `npm run install:ci`, compile com `npm run build` e use `npm start` para a prévia completa do Worker. A identidade do site e o vínculo D1 são mantidos pela habilidade Sites em `.openai/hosting.json`, configuração privada não distribuída no GitHub. Em uma cópia, configure uma hospedagem própria seguindo Sites antes de executar o servidor; nunca reutilize credenciais de outra conta.
 
-Valide as regras com `node --test operations.test.cjs`, além de `node --check dist/app.js` e `node --check dist/operations.js`. O teste usa dados fictícios e não altera cadastros do navegador.
+`public/` contém a interface; `app/` encaminha a entrada; `worker/office.ts` implementa a API; `lib/office-policy.mjs` valida os registros; `db/` e `drizzle/` definem o banco. O build usa Vinext e Cloudflare Workers. `dist/` é saída gerada. Para consultar só o visual, sem histórico de servidor, execute `node preview.mjs` e abra http://127.0.0.1:4321.
 
-O conceito de escritório de agentes foi indicado pelo usuário com a referência https://github.com/a2labsnutrition/Escritorio-de-agentes . Esta implementação visual é independente, sem copiar ou executar o servidor local desse projeto.
+O segredo `OFFICE_RUNNER_TOKEN` existe somente no ambiente de hospedagem e na configuração local ignorada `.office-runtime/config.json`. O helper `scripts/office-bridge.mjs` envia registros à origem fixa do escritório. Reservas de execução impedem duas rotinas deste escritório de enviar mensagens simultaneamente. O limite comercial também é verificado na própria caixa postal, imediatamente antes de cada envio.
 
-## Imagens
+## Verificações
 
-`dist/assets/logo.jpeg` e `uniform-*.jpeg` são as imagens originais fornecidas. `office.png` foi editada com o gerador de imagens integrado para incorporar a marca e o uniforme. O prompt da edição está em `image-prompt.txt`.
+`npm test` cobre validação de eventos, rejeição de campos privados, horário de Brasília, expiração de estado e regras das tarefas. `node scripts/check-office-api.mjs http://127.0.0.1:4324` verifica autenticação, idempotência e reservas concorrentes em uma prévia local com banco de teste e o token fictício documentado no script. Esse teste recusa origens de produção. As migrações de produção criam apenas a estrutura, nunca importam os dados de teste.
 
-## Atualizações no GitHub
+## Imagens e publicação
 
-O destino fica registrado em `github-target.json`. O usuário autorizou enviar as próximas alterações deste escritório ao concluir cada tarefa. As instruções de manutenção estão em `AGENTS.md`.
+`public/assets/logo.jpeg` e `uniform-*.jpeg` são os materiais fornecidos pelo usuário. `office.png` é a imagem gerada para a empresa; seu prompt está em `image-prompt.txt`. Os PDFs de referência não são redistribuídos. O conceito inicial de escritório de agentes foi indicado em https://github.com/a2labsnutrition/Escritorio-de-agentes.
 
-Quando os arquivos forem editados fora do checkout GitHub, `node prepare-github.mjs <caminho-absoluto-do-checkout>` prepara a pasta `connect-promo-office` com a aplicação e seus recursos. O envio deve ser feito pela integração GitHub conectada ou por Git autenticado, em um commit limitado a essa pasta.
-
-Não há sincronização contínua em segundo plano. Os registros de equipe e reuniões permanecem no navegador e não são enviados ao GitHub. A publicação do site no Sites é um processo separado do envio do código.
+O destino autorizado está em `github-target.json`. `node prepare-github.mjs <checkout-absoluto>` prepara uma cópia restrita à pasta do escritório. Cada alteração verificada deve ser enviada ao GitHub conforme `AGENTS.md`; não há sincronização permanente de arquivos. A publicação no Sites é separada e preserva a identidade e a audiência existentes.

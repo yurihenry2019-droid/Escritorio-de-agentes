@@ -18,7 +18,7 @@ if(!target.startsWith(repository+path.sep)||target===source)throw new Error('O d
 const existing=await lstat(target).catch(()=>null);
 if(existing?.isSymbolicLink()||(existing&&!existing.isDirectory()))throw new Error('A pasta de destino não pode ser um link ou arquivo.');
 await mkdir(target,{recursive:true});
-const files=['README.md','AGENTS.md','image-prompt.txt','preview.mjs','prepare-github.mjs','operations.test.cjs'];
+const files=['README.md','AGENTS.md','OPERACAO.md','image-prompt.txt','preview.mjs','prepare-github.mjs','office.test.mjs','operations.test.mjs','package.json','package-lock.json','next.config.ts','tsconfig.json','postcss.config.mjs','vite.config.ts','drizzle.config.ts','cloudflare-env.d.ts'];
 async function collect(relative){
   for(const entry of await readdir(path.join(source,relative),{withFileTypes:true})){
     const next=path.join(relative,entry.name);
@@ -27,7 +27,7 @@ async function collect(relative){
     else if(entry.isFile())files.push(next);
   }
 }
-await collect('dist');
+for(const directory of ['app','db','lib','worker','scripts','vendor','public','drizzle'])await collect(directory);
 const records=[];
 for(const relative of files){
   const output=path.join(target,relative);
@@ -47,5 +47,5 @@ for(const relative of files){
 }
 const publicConfig={repository:config.repository,branch:config.branch,folder:config.folder,source_repository:config.source_repository,mode:'sync-after-authorized-task'};
 await writeFile(path.join(target,'github-target.json'),JSON.stringify(publicConfig,null,2)+'\n');
-await writeFile(path.join(target,'.gitignore'),'node_modules/\n.openai/\n.env\n.env.*\n!.env.example\n.sites-runtime/\nqa/\n*.tar\n*.tar.gz\n');
+await writeFile(path.join(target,'.gitignore'),'node_modules/\n.openai/\n.env\n.env.*\n!.env.example\n.dev.vars*\n.office-runtime/\n.wrangler/\n.vinext/\n.next/\ndist/\n*.tsbuildinfo\n.sites-runtime/\nqa/\n*.tar\n*.tar.gz\n');
 console.log(JSON.stringify({target,repository:config.repository,branch:config.branch,folder:config.folder,files:records},null,2));

@@ -1,6 +1,7 @@
-const test=require('node:test');
-const assert=require('node:assert/strict');
-const M=require('./dist/operations-model.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+await import('./public/operations-model.js');
+const M=globalThis.ConnectOperations;
 test('a reunião respeita Brasília, passa para amanhã após 15h e cruza o ano',()=>{
   assert.equal(M.nextMeeting(new Date('2026-10-23T17:59:00Z')).toISOString(),'2026-10-23T18:00:00.000Z');
   assert.equal(M.nextMeeting(new Date('2026-10-23T18:01:00Z')).toISOString(),'2026-10-24T18:00:00.000Z');

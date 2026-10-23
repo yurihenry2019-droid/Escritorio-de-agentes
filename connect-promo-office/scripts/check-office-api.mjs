@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import http from 'node:http';
+const origin=process.argv[2]||'http://127.0.0.1:4324';
+if(new URL(origin).hostname!=='127.0.0.1')throw new Error('Os dados fictícios só podem ser usados na prévia local.');
+const token='local-preview-test-token-for-office-only-2026',runId=randomUUID();
+function call(path,body,auth=true){return new Promise((resolve,reject)=>{const payload=body?JSON.stringify(body):null;const req=http.request(origin+'/api/office/'+path,{agent:false,method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(payload?{'Content-Length':Buffer.byteLength(payload)}:{}),...(auth?{Authorization:'Bearer '+token}:{})}},response=>{let text='';response.on('data',chunk=>text+=chunk);response.on('end',()=>{try{resolve({status:response.statusCode,data:JSON.parse(text)});}catch{reject(new Error('Resposta '+response.statusCode+': '+text));}});});req.on('error',reject);if(payload)req.write(payload);req.end();});}
+const event={id:randomUUID(),runId,agent:'site',code:'site_check',state:'succeeded',count:1};
+assert.equal((await call('events',event,false)).status,401);
+assert.equal((await call('events',{...event,privateEmail:'test@example.invalid'})).status,400);
+assert.equal((await call('events',event)).status,200);
+assert.equal((await call('events',event)).status,200);
+assert.equal((await call('events',{...event,count:2})).status,409);
+const records=await call('status');assert.equal(records.data.events.filter(e=>e.id===event.id).length,1);
+assert.ok(!JSON.stringify(records.data).includes('payload_hash'));
+assert.equal((await call('claim',{runId,task:'mail'})).status,200);
+assert.equal((await call('claim',{runId:randomUUID(),task:'mail'})).status,409);
+assert.equal((await call('release',{runId:randomUUID(),task:'mail'})).status,200);
+assert.equal((await call('claim',{runId:randomUUID(),task:'mail'})).status,409);
+assert.equal((await call('release',{runId,task:'mail'})).status,200);
+assert.equal((await call('claim',{runId,task:'mail'})).status,200);
+await call('release',{runId,task:'mail'});
+console.log('OK: autorização, rejeição de conteúdo privado, registro único, conflito de repetição e reserva concorrente.');
