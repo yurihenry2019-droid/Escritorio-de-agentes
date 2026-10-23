@@ -2,13 +2,15 @@
 
 Escritório isométrico desenhado e animado em Canvas, com seis ambientes, móveis independentes e oito personagens controláveis (Yuri e sete funções virtuais). A cena não usa a antiga ilustração como fundo. A aba **Atividade** apresenta registros reais e agregados das rotinas do Codex: consultas à caixa postal, respostas confirmadas, apresentações, contatos verificados e verificações do site.
 
-Clique em um personagem ou selecione-o em **Controlar**, depois clique em um ponto livre do chão. As setas do teclado também movimentam o personagem quando o ambiente está focado. Os botões **Ir para** calculam o caminho por portas, contornando móveis e paredes. Arraste a cena para deslocar a câmera; use +, − e Centralizar para ajustar a vista. **Reunir avatares** leva os personagens à sala de reunião; esse comando visual não dispara o briefing ou ações externas. **Circulação** ativa os passeios automáticos. **Abrir ambiente** acessa as ferramentas da sala.
+O escritório funciona como uma sala de jogo isométrica, com avatares originais em pixel art, câmera próxima que acompanha o personagem e oito personagens com animações direcionais. Clique no chão para andar, em um personagem para controlá-lo ou em um móvel para usá-lo. Cadeiras e sofás permitem sentar; computadores, fliperamas e totó têm interação visual. As setas também movimentam o personagem quando o ambiente está focado.
+
+Use **Acenar**, **Dançar**, **Sentar** e o campo **Falar** para exibir um balão local. Os balões não são enviados a pessoas nem são conversas com IA. **Reunir equipe** encaminha os oito personagens para os assentos da reunião, sem disparar o briefing real. A equipe circula, usa móveis e faz pausas automaticamente ao entrar; o controle **Movimento** permite pausar. **Ver todo o andar** mostra o mapa completo e **Seguir meu personagem** retoma a câmera próxima. Arraste para explorar e use +/− para ajustar o zoom. **Abrir sala** acessa as ferramentas existentes.
 
 ## Funcionamento
 
 O Codex executa o trabalho com a conexão nativa da Hostinger. O servidor do site recebe somente função, código de ação, estado, contagem e horário. O histórico público não contém mensagens, destinatários, anexos ou credenciais. A animação representa a circulação no escritório; o histórico informa o trabalho efetivamente registrado. O site não abre sessões da Hostinger nem acessa a caixa postal por conta própria.
 
-O usuário autorizou responder clientes e enviar até cinco apresentações por dia a novos contatos comerciais públicos. O limite usa o dia de Brasília e inclui apresentações enviadas fora da rotina. Os procedimentos para checar duplicidade, descadastros, confirmar envios e suspender ações incertas estão em `OPERACAO.md`.
+O usuário ampliou a meta para **100 novas apresentações por dia**, com teto de 100 e até dez por execução nos horários existentes em dias úteis. O dia é o de Brasília e inclui apresentações enviadas fora da rotina. A rotina também respeita o aceite dos destinatários exigido pela Hostinger e sua cota móvel de 24 horas; enquanto o plano não estiver confirmado, considera no máximo 100 mensagens de saída no total nesse período. A meta não é garantia de envio. Os procedimentos para verificar elegibilidade, duplicidade, descadastros e confirmar cada mensagem estão em `OPERACAO.md`.
 
 As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem, e dependem da disponibilidade do Codex e das conexões. Copiar o projeto não cria rotinas nem fornece acesso a contas. Esta operação usa os recursos de IA do Codex; não exige uma chave separada da API da OpenAI. Não há contratação, pagamento ou decisão de investimento automática.
 
@@ -16,7 +18,7 @@ As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem, 
 
 - Recepção, diretoria do Yuri, equipe, reunião, jogos e showroom navegáveis.
 - Sete funções virtuais, sem inventar pessoas contratadas.
-- Movimento opcional, respeitando a preferência inicial por movimento reduzido.
+- Movimento iniciado ao entrar, com pausa explícita que permanece durante a navegação nesta visita.
 - Histórico no servidor, atualizado na tela a cada 30 segundos, com falhas de consulta visíveis.
 - Cadastro de equipe, tarefas, notas e pautas manuais guardados no navegador.
 - Reunião das 15h de Brasília, pauta exportável e agenda .ics; o briefing recorrente permanece na conversa do Codex.
