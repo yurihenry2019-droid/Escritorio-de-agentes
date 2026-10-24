@@ -10,9 +10,9 @@ Use **Acenar**, **Dançar**, **Sentar** e o campo **Falar** para exibir um balã
 
 O Codex executa o trabalho com a conexão nativa da Hostinger. O servidor do site recebe somente função, código de ação, estado, contagem e horário. O histórico público não contém mensagens, destinatários, anexos ou credenciais. A animação representa a circulação no escritório; o histórico informa o trabalho efetivamente registrado. O site não abre sessões da Hostinger nem acessa a caixa postal por conta própria.
 
-O usuário ampliou a meta para **100 novas apresentações por dia**, com teto de 100 e até dez por execução nos horários existentes em dias úteis. O dia é o de Brasília e inclui apresentações enviadas fora da rotina. A rotina também respeita o aceite dos destinatários exigido pela Hostinger e sua cota móvel de 24 horas; enquanto o plano não estiver confirmado, considera no máximo 100 mensagens de saída no total nesse período. A meta não é garantia de envio. Os procedimentos para verificar elegibilidade, duplicidade, descadastros e confirmar cada mensagem estão em `OPERACAO.md`.
+O usuário ampliou a meta para **100 novas apresentações por dia**, com teto de 100 e até dez por execução horária em todos os dias, incluindo noites e fins de semana. O dia é o de Brasília e inclui apresentações enviadas fora da rotina. A rotina também respeita o aceite dos destinatários exigido pela Hostinger e sua cota móvel de 24 horas; enquanto o plano não estiver confirmado, considera no máximo 100 mensagens de saída no total nesse período. A meta não é garantia de envio. Os procedimentos para verificar elegibilidade, duplicidade, descadastros e confirmar cada mensagem estão em `OPERACAO.md`.
 
-As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem, e dependem da disponibilidade do Codex e das conexões. Copiar o projeto não cria rotinas nem fornece acesso a contas. Esta operação usa os recursos de IA do Codex; não exige uma chave separada da API da OpenAI. Não há contratação, pagamento ou decisão de investimento automática.
+As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem: comercial a cada hora, marketing e financeiro a cada quatro horas, manutenção a cada duas horas e briefing diário às 15h de Brasília. Todas incluem noites e fins de semana. Como usam arquivos locais, exigem computador ligado, Codex aberto e conexões disponíveis; não são um serviço contínuo independente deste computador. A página do escritório pode ficar fechada. Copiar o projeto não cria rotinas nem fornece acesso a contas. Esta operação usa os recursos de IA do Codex; não exige uma chave separada da API da OpenAI. Não há contratação, pagamento ou decisão de investimento automática.
 
 ## Ferramentas do escritório
 
@@ -24,7 +24,7 @@ As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem, 
 - Reunião das 15h de Brasília, pauta exportável e agenda .ics; o briefing recorrente permanece na conversa do Codex.
 - Uniformes originais, download do logo, tour e jogo da memória.
 
-As tarefas manuais não são uma fila de execução automática. Pausar uma função no cadastro não pausa uma rotina do Codex; as rotinas devem ser gerenciadas na conversa. Dados locais não são compartilhados entre dispositivos e não são enviados ao GitHub. Finanças e contratações precisam de dados reais e decisões do usuário.
+As tarefas manuais não são uma fila de execução automática. Pausar uma função no cadastro não pausa uma rotina do Codex; as rotinas devem ser gerenciadas na conversa. Dados locais não são compartilhados entre dispositivos e não são enviados ao GitHub. O financeiro consulta os e-mails da Hostinger e mantém relatórios e pendências em `.office-runtime/finance/`; marketing mantém conteúdos e planos em `.office-runtime/marketing/`. Valores e documentos não entram no site público nem no GitHub. Propostas não são tratadas como receitas, e ausência de documentos não significa saldo zero. Contratações e movimentação de dinheiro continuam dependendo do usuário.
 
 ## Fonte e execução local
 

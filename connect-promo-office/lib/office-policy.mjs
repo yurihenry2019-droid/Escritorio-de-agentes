@@ -11,6 +11,9 @@ export const actions = {
   run_failed: 'A execução precisa de atenção',
   automation_enabled: 'Rotina automática configurada',
   briefing_ready: 'Briefing de gestão entregue na conversa',
+  marketing_ready: 'Material de marketing concluído e salvo em privado',
+  finance_review: 'Conferência de documentos financeiros concluída',
+  finance_report_ready: 'Relatório financeiro atualizado em privado',
   awaiting_data: 'Aguardando informações para executar',
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -25,7 +28,7 @@ export function validateEvent(input) {
   return Object.fromEntries(keys.map(key=>[key,input[key]]));
 }
 export function validateLease(input) {
-  if (!input||!uuid.test(input.runId)||!['mail','maintenance'].includes(input.task)) throw new Error('Reserva inválida.');
+  if (!input||!uuid.test(input.runId)||!['mail','maintenance','marketing','finance'].includes(input.task)) throw new Error('Reserva inválida.');
   return {runId:input.runId,task:input.task};
 }
 export function publicEvent(row, now=Date.now()) {

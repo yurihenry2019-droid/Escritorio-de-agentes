@@ -12,7 +12,7 @@ try {
     const [runId,id,agent,code,state,count='0']=args;
     data=validateEvent({runId,id,agent,code,state,count:Number(count)});path='/events';
   }else if(command==='claim'||command==='release'){data=validateLease({runId:args[0],task:args[1]});path='/'+command;}
-  else throw new Error('Use uuid, status, claim RUN_ID mail|maintenance, release RUN_ID mail|maintenance ou event RUN_ID EVENT_ID FUNCAO CODIGO ESTADO QUANTIDADE.');
+  else throw new Error('Use uuid, status, claim RUN_ID mail|maintenance|marketing|finance, release RUN_ID mail|maintenance|marketing|finance ou event RUN_ID EVENT_ID FUNCAO CODIGO ESTADO QUANTIDADE.');
   const headers={'Content-Type':'application/json'};
   if(method==='POST'){
     const config=JSON.parse(await readFile(new URL('.office-runtime/config.json',root),'utf8'));

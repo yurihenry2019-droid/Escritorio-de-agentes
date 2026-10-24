@@ -20,4 +20,11 @@ assert.equal((await call('claim',{runId:randomUUID(),task:'mail'})).status,409);
 assert.equal((await call('release',{runId,task:'mail'})).status,200);
 assert.equal((await call('claim',{runId,task:'mail'})).status,200);
 await call('release',{runId,task:'mail'});
+for (const [task,agent,code] of [['marketing','marketing','marketing_ready'],['finance','financeiro','finance_review']]) {
+  assert.equal((await call('claim',{runId,task})).status,200);
+  assert.equal((await call('claim',{runId:randomUUID(),task})).status,409);
+  assert.equal((await call('events',{...event,id:randomUUID(),agent,code,amount:100})).status,400);
+  assert.equal((await call('events',{...event,id:randomUUID(),agent,code})).status,200);
+  assert.equal((await call('release',{runId,task})).status,200);
+}
 console.log('OK: autorização, rejeição de conteúdo privado, registro único, conflito de repetição e reserva concorrente.');

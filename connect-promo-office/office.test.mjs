@@ -18,3 +18,14 @@ test('janela diária usa Brasília, e reserva só aceita rotinas conhecidas',()=
   assert.deepEqual(validateLease({runId:event.runId,task:'mail'}),{runId:event.runId,task:'mail'});
   assert.throws(()=>validateLease({runId:event.runId,task:'qualquer-coisa'}));
 });
+test('marketing e financeiro aceitam entregas agregadas sem expor documentos ou valores',()=>{
+  for (const [agent,code] of [['marketing','marketing_ready'],['financeiro','finance_review'],['financeiro','finance_report_ready']]) {
+    const record={...event,agent,code,count:1};
+    assert.deepEqual(validateEvent(record),record);
+    for (const field of ['amount','invoice','customer','documentPath','body']) assert.throws(()=>validateEvent({...record,[field]:'privado'}));
+    const publicRecord=publicEvent({...record,createdAt:1000,amount:100,customer:'privado'});
+    assert.ok(!('amount' in publicRecord));
+    assert.ok(!('customer' in publicRecord));
+  }
+  for (const task of ['marketing','finance']) assert.deepEqual(validateLease({runId:event.runId,task}),{runId:event.runId,task});
+});
