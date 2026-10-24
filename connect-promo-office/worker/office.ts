@@ -1,7 +1,7 @@
 import { agents, publicEvent, todayStart, validateEvent, validateLease } from '../lib/office-policy.mjs';
 const json = (data: unknown, status=200) => new Response(JSON.stringify(data), {status,headers:{'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function digest(value:string) { return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(v=>v.toString(16).padStart(2,'0')).join(''); }
-async function authorized(request:Request, secret?:string) {
+export async function authorized(request:Request, secret?:string) {
   if (!secret || secret.length<40) return false;
   const a=await digest(request.headers.get('authorization')||''),b=await digest('Bearer '+secret);
   let difference=0;for(let i=0;i<a.length;i++)difference|=a.charCodeAt(i)^b.charCodeAt(i);
@@ -16,19 +16,22 @@ async function body(request:Request) {
   const bytes=new Uint8Array(size);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}
   return JSON.parse(new TextDecoder().decode(bytes));
 }
-export async function officeFetch(request:Request,env:Cloudflare.Env):Promise<Response|null> {
+export async function officeFetch(request:Request,env:Cloudflare.Env,executor:'local'|'cloud'='local'):Promise<Response|null> {
   const path=new URL(request.url).pathname;
   if(!path.startsWith('/api/office/'))return null;
   try {
     if(!env.DB)return json({error:'Histórico temporariamente indisponível.'},503);
     if(path==='/api/office/status' && request.method==='GET') {
-      const [recent,latest,totals]=await env.DB.batch([
+      const [recent,latest,totals,control]=await env.DB.batch([
         env.DB.prepare('SELECT id,agent,code,state,count,created_at AS createdAt FROM office_events ORDER BY created_at DESC,id DESC LIMIT 30'),
         env.DB.prepare('SELECT id,agent,code,state,count,created_at AS createdAt FROM (SELECT *,ROW_NUMBER() OVER(PARTITION BY agent ORDER BY created_at DESC,id DESC) AS position FROM office_events) WHERE position=1'),
         env.DB.prepare("SELECT code,SUM(count) AS total FROM office_events WHERE state='succeeded' AND created_at>=? GROUP BY code").bind(todayStart()),
+        env.DB.prepare("SELECT value FROM office_documents WHERE key='system/control'"),
       ]);
       const now=Date.now(),rows=latest.results as any[];
-      return json({serverTime:new Date(now).toISOString(),agents:agents.map((agent:string)=>({agent,last:rows.find(r=>r.agent===agent)?publicEvent(rows.find(r=>r.agent===agent),now):null})),events:(recent.results as any[]).map(row=>publicEvent(row,now)),today:Object.fromEntries((totals.results as any[]).map(row=>[row.code,row.total]))});
+      const modes=control.results.length?JSON.parse((control.results[0] as any).value).executors:{};
+      const execution=Object.fromEntries(['mail','marketing','finance','maintenance','briefing'].map(role=>[role,modes?.[role]==='cloud'?'cloud':'local']));
+      return json({serverTime:new Date(now).toISOString(),execution,agents:agents.map((agent:string)=>({agent,last:rows.find(r=>r.agent===agent)?publicEvent(rows.find(r=>r.agent===agent),now):null})),events:(recent.results as any[]).map(row=>publicEvent(row,now)),today:Object.fromEntries((totals.results as any[]).map(row=>[row.code,row.total]))});
     }
     if(!['/api/office/events','/api/office/claim','/api/office/release'].includes(path))return json({error:'Operação desconhecida.'},404);
     if(request.method!=='POST')return json({error:'Método não permitido.'},405);
@@ -49,9 +52,13 @@ export async function officeFetch(request:Request,env:Cloudflare.Env):Promise<Re
     if(path==='/api/office/release') {
       await env.DB.prepare('DELETE FROM office_leases WHERE task=? AND run_id=?').bind(lease.task,lease.runId).run();return json({ok:true});
     }
+    const control=await env.DB.prepare("SELECT value FROM office_documents WHERE key='system/control'").first<{value:string}>();
+    const modes=control?JSON.parse(control.value):{};
+    const expected=modes.executors?.[lease.task]||'local';
+    if(expected!==executor)return json({error:'Esta função está reservada ao executor '+expected+'.'},409);
     const now=Date.now(),expires=now+25*60*1000;
     await env.DB.prepare('INSERT INTO office_leases (task,run_id,expires_at) VALUES (?,?,?) ON CONFLICT(task) DO UPDATE SET run_id=excluded.run_id,expires_at=excluded.expires_at WHERE office_leases.expires_at<=? OR office_leases.run_id=excluded.run_id').bind(lease.task,lease.runId,expires,now).run();
     const held=await env.DB.prepare('SELECT run_id,expires_at FROM office_leases WHERE task=?').bind(lease.task).first<{run_id:string,expires_at:number}>();
-    return held?.run_id===lease.runId?json({ok:true,expiresAt:held.expires_at}):json({error:'Outra execução está cuidando desta rotina.'},409);
+    return held&&held.run_id===lease.runId?json({ok:true,expiresAt:held.expires_at}):json({error:'Outra execução está cuidando desta rotina.'},409);
   } catch {return json({error:'Não foi possível acessar o histórico. Tente novamente mais tarde.'},503);}
 }

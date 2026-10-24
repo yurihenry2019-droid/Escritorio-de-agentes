@@ -4,6 +4,14 @@ Autorização ampliada pelo usuário em 24/10/2026 para noites e fins de semana,
 
 ## Execução
 
+### Continuidade independente do computador
+
+Em 24/10/2026 Yuri pediu operação 24 horas sem sua presença. A implantação de ferramentas privadas `/mcp` não prova que a migração terminou. A fonte de verdade é o documento privado `system/control`: cada função só pode obter reserva no executor indicado (`local` ou `cloud`), com padrão local. Não modifique esse controle durante as rotinas. A troca de executor é uma tarefa de configuração autorizada nesta conversa, após teste de acesso e importação do progresso.
+
+Na nuvem, leia `office_instructions` e use `office_read`, `office_write`, `office_lease` e `office_event`. As instruções duráveis em `lib/cloud-instructions.mjs` preservam os limites desta operação e substituem os caminhos locais por documentos privados no servidor. E-mails continuam sendo acessados exclusivamente pelo conector nativo da Hostinger. A execução na nuvem não depende de manter este computador ligado; a execução local descrita abaixo depende. Salvar um agendamento não comprova execução. Não desligue a operação local antes de verificar a substituta; não permita envio concorrente.
+
+O acesso privado exige a identidade autenticada do proprietário configurada no ambiente, independentemente da audiência pública do escritório. Nunca publique os documentos na interface pública, fonte ou GitHub. Gravações privadas exigem reserva da área, revisão esperada e identificador único; releia depois de salvar. Falhas ou resultados incertos não autorizam repetir envios.
+
 Rotinas no Codex nesta conversa, em America/Sao_Paulo, todos os dias, inclusive noites, sábados e domingos: atendimento e prospecção a cada hora cheia (00h–23h); marketing às 00h10, 04h10, 08h10, 12h10, 16h10 e 20h10; financeiro às 00h20, 04h20, 08h20, 12h20, 16h20 e 20h20; manutenção a cada duas horas, às horas pares e 40 minutos. A reunião existente permanece às 15h. São execuções agendadas, não um processo sem interrupções. Como usam arquivos locais, o computador precisa estar ligado, com Codex aberto, acesso à internet e conexões disponíveis. A página do site pode estar fechada.
 
 O executor é a rotina do Codex, usando as conexões nativas autorizadas do usuário. O site mostra eventos agregados em D1. O site não possui credenciais da Hostinger e não executa ferramentas do conector no navegador. A disponibilidade das rotinas depende do Codex e das conexões. Não afirmar operação contínua ou execução confirmada sem verificar.

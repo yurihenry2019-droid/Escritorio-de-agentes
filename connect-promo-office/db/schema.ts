@@ -5,3 +5,7 @@ export const officeEvents=sqliteTable('office_events',{
 export const officeLeases=sqliteTable('office_leases',{
   task:text('task').primaryKey(),runId:text('run_id').notNull(),expiresAt:integer('expires_at').notNull(),
 });
+export const officeDocuments=sqliteTable('office_documents',{
+  key:text('key').primaryKey(),value:text('value').notNull(),revision:integer('revision').notNull(),
+  updatedAt:integer('updated_at').notNull(),operationId:text('operation_id').notNull(),
+});

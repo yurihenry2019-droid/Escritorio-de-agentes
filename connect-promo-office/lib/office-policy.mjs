@@ -28,7 +28,7 @@ export function validateEvent(input) {
   return Object.fromEntries(keys.map(key=>[key,input[key]]));
 }
 export function validateLease(input) {
-  if (!input||!uuid.test(input.runId)||!['mail','maintenance','marketing','finance'].includes(input.task)) throw new Error('Reserva inválida.');
+  if (!input||!uuid.test(input.runId)||!['mail','maintenance','marketing','finance','briefing'].includes(input.task)) throw new Error('Reserva inválida.');
   return {runId:input.runId,task:input.task};
 }
 export function publicEvent(row, now=Date.now()) {

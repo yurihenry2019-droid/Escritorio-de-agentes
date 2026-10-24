@@ -2,9 +2,12 @@ import handler from "vinext/server/fetch-handler";
 import { runWithConnectorBinding } from "../lib/connector-context";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 import { officeFetch } from "./office";
+import { privateOfficeFetch } from "./private-office";
 
 const worker = {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
+    const privateOffice = await privateOfficeFetch(request, env);
+    if (privateOffice) return privateOffice;
     const office = await officeFetch(request, env);
     if (office) return office;
     let binding = ctx.props?.CONNECTORS;
