@@ -1,4 +1,5 @@
 export const agents = ['gerencia','marketing','comercial','email','atendimento','financeiro','site'];
+export const roleEventAgents = {mail:['atendimento','email','comercial'],marketing:['marketing'],finance:['financeiro'],maintenance:['site'],briefing:['gerencia']};
 export const actions = {
   inbox_review: 'Caixa de entrada e histórico conferidos',
   auto_reply_ignored: 'Respostas automáticas identificadas; nenhum retorno necessário',

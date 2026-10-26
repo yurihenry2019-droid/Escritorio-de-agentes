@@ -16,6 +16,10 @@ As rotinas recorrentes são configuradas no Codex, separadamente da hospedagem: 
 
 ## Continuidade na nuvem
 
+Em 26/10/2026, os cinco executores foram configurados na nuvem, com documentos privados migrados e agendamentos vinculados ao Site. O computador e o aplicativo local não são dependências dessas execuções. Consulte `system/control`, os diagnósticos privados `AREA/cloud-last-run.json` e os resultados das tarefas hospedadas para distinguir configuração, execução confirmada e bloqueios. As rotinas locais são pausadas após verificar cada substituta; não devem ser retomadas sem uma troca explícita de executor. Os arquivos locais antigos ficam apenas como cópia histórica.
+
+Os horários de Brasília são: comercial a cada hora cheia; marketing às 00h10, 04h10, 08h10, 12h10, 16h10 e 20h10; financeiro nos mesmos horários, aos 20 minutos; manutenção nas horas pares, aos 40 minutos; briefing diário às 15h. Todas as recorrências incluem fins de semana. Conexões válidas e disponibilidade do serviço continuam necessárias; agendamento não garante execução sem interrupções.
+
 O endpoint `/mcp` oferece ferramentas privadas ao proprietário autenticado pelo Sites. `OFFICE_OWNER_EMAIL`, configurado como segredo de ambiente, limita o acesso; visitantes do escritório público não recebem documentos. `office_documents` guarda relatórios, checkpoints e recibos privados com controle de versão. Nada disso é incluído no GitHub ou no histórico público.
 
 As ferramentas `office_instructions`, `office_read`, `office_write`, `office_lease` e `office_event` permitem uma execução hospedada sem arquivos locais. O documento privado `system/control` define o executor de cada função. O padrão permanece `local`; só se muda para `cloud` depois de importar o progresso, confirmar acesso do proprietário e da Hostinger em uma execução hospedada e verificar o agendamento. A troca bloqueia reservas do executor anterior. Configurar a infraestrutura ou salvar um agendamento não comprova trabalho executado. `office_probe` testa somente a conexão, sem contar como atividade comercial.

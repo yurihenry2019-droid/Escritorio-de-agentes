@@ -1,6 +1,7 @@
 import { authorized, officeFetch } from './office';
 import { documentRole, isOfficeOwner, roles, validatePrivateWrite } from '../lib/private-office-policy.mjs';
 import { cloudInstructions } from '../lib/cloud-instructions.mjs';
+import { agents, actions, roleEventAgents } from '../lib/office-policy.mjs';
 const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 const object=(properties:Record<string,unknown>,required:string[]=[])=>({type:'object',properties,required,additionalProperties:false});
 const string={type:'string'};
@@ -9,7 +10,7 @@ const tools=[
   {name:'office_read',description:'Lê um documento privado ou lista até 100 chaves da área. Nunca envie estes dados ao histórico público.',inputSchema:object({key:string,area:{type:'string',enum:roles},offset:{type:'integer',minimum:0}})},
   {name:'office_write',description:'Salva documento privado com reserva válida e controle de versão. Para intenção de e-mail, salvar e reler antes do envio. Não aceita configurações ou segredos.',inputSchema:object({key:string,value:{},runId:string,operationId:string,expectedRevision:{type:'integer',minimum:0}},['key','value','runId','operationId','expectedRevision'])},
   {name:'office_lease',description:'Reserva, renova ou libera uma função. Não trabalhe se a reserva for negada. Renove antes de 25 minutos e libere no final. runId omitido em claim gera UUID.',inputSchema:object({action:{type:'string',enum:['claim','release']},task:{type:'string',enum:roles},runId:string},['action','task'])},
-  {name:'office_event',description:'Registra somente ação realmente confirmada no histórico público agregado, sem informação privada. id omitido gera UUID; repetir use o mesmo id.',inputSchema:object({runId:string,id:string,agent:string,code:string,state:{type:'string',enum:['running','succeeded','blocked','failed']},count:{type:'integer',minimum:0,maximum:10000}},['runId','agent','code','state','count'])},
+  {name:'office_event',description:'Registra somente ação realmente confirmada no histórico público agregado, sem informação privada. Use agent financeiro para finance, site para maintenance e gerencia para briefing. id omitido gera UUID; repetir use o mesmo id. Não tente novamente após rejeição de aprovação.',inputSchema:object({runId:string,id:string,agent:{type:'string',enum:agents},code:{type:'string',enum:Object.keys(actions)},state:{type:'string',enum:['running','succeeded','blocked','failed']},count:{type:'integer',minimum:0,maximum:10000}},['runId','agent','code','state','count'])},
   {name:'office_probe',description:'Teste inofensivo de acesso privado: devolve desafio solicitado. Não envia e-mails nem registra trabalho. Pode salvar confirmação privada de acesso à caixa corporativa após account_current.',inputSchema:object({challenge:string,mailboxVerified:{type:'boolean'}},['challenge'])},
 ];
 async function payload(request:Request){
@@ -23,7 +24,7 @@ async function documentCall(name:string,args:any,env:Cloudflare.Env,local:boolea
   const db=env.DB!;
   if(name==='office_instructions'){
     const control=await db.prepare("SELECT value FROM office_documents WHERE key='system/control'").first<{value:string}>();
-    return {instructions:cloudInstructions,control:control?JSON.parse(control.value):{executors:Object.fromEntries(roles.map(r=>[r,'local'])),migration:'not_ready'}};
+    return {instructions:cloudInstructions+'\n\nCONTRATO DOS EVENTOS\nOs nomes das reservas não são os nomes dos agentes no painel. Use eventContract.roleAgents para escolher agent e eventContract.codes para code. Uma rejeição de aprovação não autoriza repetir com outro nome ou ferramenta. Preserve o resultado privado e informe o bloqueio. Uma reserva ocupada é concorrência temporária, não motivo para desativar um agendamento.',eventContract:{agents,codes:Object.keys(actions),roleAgents:roleEventAgents,fields:['runId','id','agent','code','state','count']},control:control?JSON.parse(control.value):{executors:Object.fromEntries(roles.map(r=>[r,'local'])),migration:'not_ready'}};
   }
   if(name==='office_probe'){
     if(typeof args.challenge!=='string'||args.challenge.length>120)throw Error('Desafio inválido.');
