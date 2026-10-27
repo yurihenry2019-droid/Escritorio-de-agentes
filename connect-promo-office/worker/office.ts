@@ -21,6 +21,9 @@ export async function officeFetch(request:Request,env:Cloudflare.Env,executor:'l
   if(!path.startsWith('/api/office/'))return null;
   try {
     if(!env.DB)return json({error:'Histórico temporariamente indisponível.'},503);
+    if(path==='/api/office/status' && request.method==='HEAD') {
+      return new Response(null,{status:200,headers:{'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
+    }
     if(path==='/api/office/status' && request.method==='GET') {
       const [recent,latest,totals,control]=await env.DB.batch([
         env.DB.prepare('SELECT id,agent,code,state,count,created_at AS createdAt FROM office_events ORDER BY created_at DESC,id DESC LIMIT 30'),
