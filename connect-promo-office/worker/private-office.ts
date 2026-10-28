@@ -26,14 +26,20 @@ async function payload(request:Request){
 }
 async function documentCall(name:string,args:any,env:Cloudflare.Env,local:boolean){
   const db=env.DB!;
+  async function overview(){
+    const [rows,leases]=await Promise.all([
+      db.prepare('SELECT key,value,revision,updated_at AS updatedAt FROM office_documents WHERE key IN ('+overviewKeys.map(()=>'?').join(',')+')').bind(...overviewKeys).all(),
+      db.prepare('SELECT task,expires_at FROM office_leases').all(),
+    ]);
+    return officeOverview(rows.results,new Date(),leases.results);
+  }
   if(name==='office_domain_check')return checkMailDomain(args.domain);
   if(name==='office_overview'){
-    const rows=await db.prepare('SELECT key,value,revision,updated_at AS updatedAt FROM office_documents WHERE key IN ('+overviewKeys.map(()=>'?').join(',')+')').bind(...overviewKeys).all();
-    return officeOverview(rows.results);
+    return overview();
   }
   if(name==='office_instructions'){
     const control=await db.prepare("SELECT value FROM office_documents WHERE key='system/control'").first<{value:string}>();
-    return {instructions:cloudInstructions+'\n\nCONTRATO DOS EVENTOS\nOs nomes das reservas não são os nomes dos agentes no painel. Use eventContract.roleAgents para escolher agent e eventContract.codes para code. Uma rejeição de aprovação não autoriza repetir com outro nome ou ferramenta. Preserve o resultado privado e informe o bloqueio. Uma reserva ocupada é concorrência temporária, não motivo para desativar um agendamento.',eventContract:{agents,codes:Object.keys(actions),roleAgents:roleEventAgents,fields:['runId','id','agent','code','state','count']},control:control?JSON.parse(control.value):{executors:Object.fromEntries(roles.map(r=>[r,'local'])),migration:'not_ready'}};
+    return {instructions:cloudInstructions+'\n\nCONTRATO DOS EVENTOS\nOs nomes das reservas não são os nomes dos agentes no painel. Use eventContract.roleAgents para escolher agent e eventContract.codes para code. Uma rejeição de aprovação não autoriza repetir com outro nome ou ferramenta. Preserve o resultado privado e informe o bloqueio. Uma reserva ocupada é concorrência temporária, não motivo para desativar um agendamento. O campo overview contém uma leitura privada dos relatórios e das reservas neste instante; não autoriza liberar outra execução e não substitui adquirir a própria reserva.',eventContract:{agents,codes:Object.keys(actions),roleAgents:roleEventAgents,fields:['runId','id','agent','code','state','count']},control:control?JSON.parse(control.value):{executors:Object.fromEntries(roles.map(r=>[r,'local'])),migration:'not_ready'},overview:await overview()};
   }
   if(name==='office_probe'){
     if(typeof args.challenge!=='string'||args.challenge.length>120)throw Error('Desafio inválido.');

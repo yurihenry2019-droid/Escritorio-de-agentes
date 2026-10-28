@@ -12,7 +12,7 @@ function source(document) {
   return {key:document.key, revision:count(document.revision), updatedAt:Number.isFinite(document.updatedAt) ? new Date(document.updatedAt).toISOString() : null};
 }
 
-export function officeOverview(documents, now = new Date()) {
+export function officeOverview(documents, now = new Date(), leases = []) {
   const warnings = [];
   const docs = new Map();
   for (const row of documents) {
@@ -57,6 +57,11 @@ export function officeOverview(documents, now = new Date()) {
     generatedAt:now.toISOString(), timezone:'America/Sao_Paulo', privateOnly:true,
     evidence:'Saved reports; confirm native Sent before any send. Missing evidence is unknown, never zero.',
     execution:Object.fromEntries(['mail','marketing','finance','maintenance','briefing'].map(role=>[role,['cloud','local'].includes(control.executors?.[role]) ? control.executors[role] : null])),
+    reservations:Object.fromEntries(['mail','marketing','finance','maintenance','briefing'].map(role=>{
+      const lease=leases.find(item=>item.task===role),expires=Number(lease?.expires_at);
+      const active=Number.isFinite(expires)&&expires>now.valueOf();
+      return [role,{active,expiresAt:Number.isFinite(expires)?new Date(expires).toISOString():null,remainingSeconds:active?Math.ceil((expires-now.valueOf())/1000):0}];
+    })),
     mail:{...report('mail/cloud-last-run.json'), today:{
       date:day(now), asOf:checkedAt, verifiedReport:usable,
       presentations:usable ? presentations : null, outgoingTotal:usable ? total : null,

@@ -56,6 +56,13 @@ test('briefing diário habilitado não significa supervisão de dez minutos ativ
   const result=officeOverview([doc('briefing/supervision-protocol.json',{scheduleDecision:{enabled:true,requestedMinutes:10,configuredMinutes:null,exactRequestFulfilled:false,restoredDailyBriefing:true}})],now);
   assert.equal(result.supervision.exactRequestFulfilled,false);assert.equal(result.supervision.dailyBriefingPreserved,true);
 });
+
+test('reservas expõem apenas função e vencimento, sem liberar nem revelar identificadores',()=>{
+  const result=officeOverview([],now,[{task:'mail',run_id:'PRIVATE-RUN',expires_at:now.valueOf()+90000},{task:'finance',expires_at:now.valueOf()-1}]);
+  assert.equal(result.reservations.mail.active,true);assert.equal(result.reservations.mail.remainingSeconds,90);
+  assert.equal(result.reservations.finance.active,false);assert.equal(result.reservations.marketing.active,false);
+  assert.ok(!JSON.stringify(result).includes('PRIVATE-RUN'));
+});
 test('painel não transforma configuração ou registro antigo em trabalho atual',()=>{
   const event={agent:'gerencia',code:'automation_enabled',state:'succeeded',at:'2026-10-27T10:00:00Z',label:'Configuração',count:1};
   assert.equal(ui.label(event,now.valueOf()),'Configuração registrada');assert.equal(ui.olderDay(event,now.valueOf()),true);
