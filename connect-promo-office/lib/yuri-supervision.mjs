@@ -11,15 +11,15 @@ export function planSupervision(rows,leases,now=new Date()) {
   const add=(id,sector,reason,request)=>demands.push({id,sector,reason,request});
   for(const [sector,limit] of Object.entries(cadence)) {
     const report=overview[sector],running=overview.reservations[role[sector]]?.active;
-    if(!running&&(!report.available||report.ageMinutes===null||report.ageMinutes>limit))
+    if(!running&&(!report.available||report.ageMinutes===null||report.ageMinutes>limit||Date.parse(report.completedAt)>now.valueOf()))
       add('report-'+sector,sector,'missing_or_late_evidence','Conferir a função na próxima execução autorizada e registrar fontes, conclusão e bloqueio real.');
   }
   if(!overview.mail.today.verifiedReport||overview.mail.ageMinutes===null||overview.mail.ageMinutes>90)
     add('mail-count','mail','unverified_or_stale_count','Reconciliar Entrada, Enviados, devoluções, descadastros e reservas incertas; paginar e registrar cotas reais antes de enviar.');
   if(overview.service.pendingInReviewedConversations>0)
     add('service-pending','service','pending_human_requests','Ler conversas pendentes, verificar se já foram atendidas e responder solicitações rotineiras com inReplyTo real, dentro da reserva e da cota.');
-  if(overview.mail.today.verifiedReport&&overview.mail.today.remainingToGoal>0)
-    add('prospecting-goal','mail','daily_goal_incomplete','Priorizar empresas de todo o Brasil com convite explícito a apresentações de fornecedores. Deduplicar empresa, domínio, aliases e histórico completo. Até 20 candidatos e 10 apresentações por execução; nunca ultrapassar 100 por dia nem a cota móvel.');
+  if(!overview.mail.today.verifiedReport||overview.mail.today.remainingToGoal>0)
+    add('prospecting-goal','mail',overview.mail.today.verifiedReport?'daily_goal_incomplete':'daily_goal_unverified','Primeiro confirmar cotas nativas. Priorizar empresas de todo o Brasil com convite explícito a apresentações de fornecedores. Deduplicar empresa, domínio, aliases e histórico completo. Até 20 candidatos e 10 apresentações por execução; nunca ultrapassar 100 por dia nem a cota móvel.');
   const previous=parsed(rows.find(r=>r.key===queueKey));
   const prior=new Map((Array.isArray(previous.actions)?previous.actions:[]).map(a=>[a.id,a]));
   const actions=demands.map(a=>({...a,status:'pending',firstSeenAt:prior.get(a.id)?.status==='pending'?prior.get(a.id).firstSeenAt:now.toISOString(),lastObservedAt:now.toISOString()}));
@@ -32,5 +32,6 @@ export function planSupervision(rows,leases,now=new Date()) {
 }
 export function publicSupervision(row,enabled,now=Date.now()) {
   const tick=parsed(row),at=Date.parse(tick.checkedAt),age=now-at;
-  return {configured:enabled===true,cadenceMinutes:enabled?10:null,lastCheckAt:Number.isFinite(at)&&age>=0?tick.checkedAt:null,recentExecution:enabled===true&&Number.isFinite(at)&&age>=0&&age<=20*60000,evidence:'Verificação dos relatórios; não significa novo envio ou entrega de e-mail.'};
+  const evidence=Number.isFinite(at)&&age>=0;
+  return {serviceReady:enabled===true,configured:enabled===true&&evidence,cadenceMinutes:enabled&&evidence?10:null,lastCheckAt:evidence?tick.checkedAt:null,recentExecution:enabled===true&&evidence&&age<=20*60000,evidence:'Verificação dos relatórios; não significa novo envio ou entrega de e-mail.'};
 }

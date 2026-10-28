@@ -41,6 +41,8 @@ test('exclusive lease, idempotency and release protect daily briefing and repeat
 test('missing reports stay unknown, stale evidence is challenged and public projection omits private fields',()=>{
   const first=planSupervision([],[],new Date(fixed));
   assert.equal(first.tick.presentations,null);assert.equal(first.tick.remainingToGoal,null);
+  assert.ok(first.queue.actions.some(a=>a.id==='prospecting-goal'&&a.reason==='daily_goal_unverified'));
+  assert.equal(publicSupervision(undefined,true,fixed).configured,false);
   assert.ok(first.queue.actions.some(a=>a.id==='mail-count'));
   const second=planSupervision([{key:queueKey,value:first.queue}],[],new Date(fixed+600000));assert.equal(second.queue.newDemands,0);
   const pub=publicSupervision({value:{...first.tick,client:'PRIVATE',financialValue:123}},true,fixed+60000);
