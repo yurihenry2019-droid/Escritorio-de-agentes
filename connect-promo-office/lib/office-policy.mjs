@@ -12,6 +12,7 @@ export const actions = {
   run_failed: 'A execução precisa de atenção',
   automation_enabled: 'Rotina automática configurada',
   briefing_ready: 'Briefing de gestão entregue na conversa',
+  supervision_check: 'Yuri conferiu relatórios e atualizou pendências dos setores',
   marketing_ready: 'Material de marketing concluído e salvo em privado',
   finance_review: 'Mensagens conferidas para análise financeira',
   finance_report_ready: 'Relatório financeiro atualizado em privado',

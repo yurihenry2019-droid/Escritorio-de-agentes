@@ -4,5 +4,7 @@ declare namespace Cloudflare {
     BUCKET?: R2Bucket;
     OFFICE_RUNNER_TOKEN?: string;
     OFFICE_OWNER_EMAIL?: string;
+    YURI_SUPERVISION_TOKEN?: string;
+    YURI_SUPERVISION_ENABLED?: string;
   }
 }

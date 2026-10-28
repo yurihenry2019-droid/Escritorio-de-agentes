@@ -1,11 +1,14 @@
 import handler from "vinext/server/fetch-handler";
 import { runWithConnectorBinding } from "../lib/connector-context";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
-import { officeFetch } from "./office";
+import { authorized, officeFetch } from "./office";
+import { supervisionFetch } from "../lib/yuri-endpoint.mjs";
 import { privateOfficeFetch } from "./private-office";
 
 const worker = {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
+    const supervision = await supervisionFetch(request, env, {authorized});
+    if (supervision) return supervision;
     const privateOffice = await privateOfficeFetch(request, env);
     if (privateOffice) return privateOffice;
     const office = await officeFetch(request, env);

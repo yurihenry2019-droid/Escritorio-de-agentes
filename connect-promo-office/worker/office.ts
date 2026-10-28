@@ -1,4 +1,5 @@
 import { agents, publicEvent, todayStart, validateEvent, validateLease } from '../lib/office-policy.mjs';
+import {publicSupervision} from '../lib/yuri-supervision.mjs';
 const json = (data: unknown, status=200) => new Response(JSON.stringify(data), {status,headers:{'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function digest(value:string) { return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(v=>v.toString(16).padStart(2,'0')).join(''); }
 export async function authorized(request:Request, secret?:string) {
@@ -25,16 +26,17 @@ export async function officeFetch(request:Request,env:Cloudflare.Env,executor:'l
       return new Response(null,{status:200,headers:{'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
     }
     if(path==='/api/office/status' && request.method==='GET') {
-      const [recent,latest,totals,control]=await env.DB.batch([
+      const [recent,latest,totals,control,supervision]=await env.DB.batch([
         env.DB.prepare('SELECT id,agent,code,state,count,created_at AS createdAt FROM office_events ORDER BY created_at DESC,id DESC LIMIT 30'),
         env.DB.prepare('SELECT id,agent,code,state,count,created_at AS createdAt FROM (SELECT *,ROW_NUMBER() OVER(PARTITION BY agent ORDER BY created_at DESC,id DESC) AS position FROM office_events) WHERE position=1'),
         env.DB.prepare("SELECT code,SUM(count) AS total FROM office_events WHERE state='succeeded' AND created_at>=? GROUP BY code").bind(todayStart()),
         env.DB.prepare("SELECT value FROM office_documents WHERE key='system/control'"),
+        env.DB.prepare("SELECT value FROM office_documents WHERE key='briefing/yuri-cloud-tick.json'"),
       ]);
       const now=Date.now(),rows=latest.results as any[];
       const modes=control.results.length?JSON.parse((control.results[0] as any).value).executors:{};
       const execution=Object.fromEntries(['mail','marketing','finance','maintenance','briefing'].map(role=>[role,modes?.[role]==='cloud'?'cloud':'local']));
-      return json({serverTime:new Date(now).toISOString(),execution,agents:agents.map((agent:string)=>({agent,last:rows.find(r=>r.agent===agent)?publicEvent(rows.find(r=>r.agent===agent),now):null})),events:(recent.results as any[]).map(row=>publicEvent(row,now)),today:Object.fromEntries((totals.results as any[]).map(row=>[row.code,row.total]))});
+      return json({serverTime:new Date(now).toISOString(),execution,supervision:publicSupervision(supervision.results[0],env.YURI_SUPERVISION_ENABLED==='true',now),agents:agents.map((agent:string)=>({agent,last:rows.find(r=>r.agent===agent)?publicEvent(rows.find(r=>r.agent===agent),now):null})),events:(recent.results as any[]).map(row=>publicEvent(row,now)),today:Object.fromEntries((totals.results as any[]).map(row=>[row.code,row.total]))});
     }
     if(!['/api/office/events','/api/office/claim','/api/office/release'].includes(path))return json({error:'Operação desconhecida.'},404);
     if(request.method!=='POST')return json({error:'Método não permitido.'},405);
