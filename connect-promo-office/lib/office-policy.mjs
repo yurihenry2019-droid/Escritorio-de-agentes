@@ -1,19 +1,19 @@
 export const agents = ['gerencia','marketing','comercial','email','atendimento','financeiro','site'];
 export const roleEventAgents = {mail:['atendimento','email','comercial'],marketing:['marketing'],finance:['financeiro'],maintenance:['site'],briefing:['gerencia']};
 export const actions = {
-  inbox_review: 'Caixa de entrada e histórico conferidos',
+  inbox_review: 'Consulta da caixa de entrada e do histórico registrada',
   auto_reply_ignored: 'Respostas automáticas identificadas; nenhum retorno necessário',
   reply_sent: 'Resposta a cliente confirmada nos enviados',
   outreach_sent: 'Apresentação comercial confirmada nos enviados',
   quota_reached: 'Limite diário de novas apresentações atingido',
-  leads_verified: 'Contatos comerciais públicos verificados',
+  leads_verified: 'Contatos pesquisados e avaliados',
   site_check: 'Verificação do site concluída',
   bug_fixed: 'Correção testada e publicada',
   run_failed: 'A execução precisa de atenção',
   automation_enabled: 'Rotina automática configurada',
   briefing_ready: 'Briefing de gestão entregue na conversa',
   marketing_ready: 'Material de marketing concluído e salvo em privado',
-  finance_review: 'Conferência de documentos financeiros concluída',
+  finance_review: 'Mensagens conferidas para análise financeira',
   finance_report_ready: 'Relatório financeiro atualizado em privado',
   awaiting_data: 'Aguardando informações para executar',
 };

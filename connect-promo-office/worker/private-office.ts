@@ -2,11 +2,15 @@ import { authorized, officeFetch } from './office';
 import { documentRole, isOfficeOwner, roles, validatePrivateWrite } from '../lib/private-office-policy.mjs';
 import { cloudInstructions } from '../lib/cloud-instructions.mjs';
 import { agents, actions, roleEventAgents } from '../lib/office-policy.mjs';
+import { officeOverview, overviewKeys } from '../lib/office-overview.mjs';
+import { checkMailDomain } from '../lib/mail-domain.mjs';
 const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 const object=(properties:Record<string,unknown>,required:string[]=[])=>({type:'object',properties,required,additionalProperties:false});
 const string={type:'string'};
 const tools=[
   {name:'office_instructions',description:'Leia primeiro. Procedimentos da Connect Promo, executor autorizado e estado da migração. Acesso exclusivo do proprietário.',inputSchema:object({})},
+  {name:'office_overview',description:'Resumo privado e somente leitura dos últimos relatórios de cada setor, com revisões, horários, contagem diária e lacunas. Não representa nova execução nem confirma entrega de e-mail. Confirme Enviados antes de enviar.',inputSchema:object({})},
+  {name:'office_domain_check',description:'Consulta somente o DNS de um domínio público de e-mail por HTTPS. Distingue MX, fallback, Null MX, domínio inexistente e consulta inconclusiva. Não envia e-mail, testa caixa ou comprova aceite. Use depois de verificar fonte oficial e afinidade.',inputSchema:object({domain:string},['domain'])},
   {name:'office_read',description:'Lê um documento privado ou lista até 100 chaves da área. Nunca envie estes dados ao histórico público.',inputSchema:object({key:string,area:{type:'string',enum:roles},offset:{type:'integer',minimum:0}})},
   {name:'office_write',description:'Salva documento privado com reserva válida e controle de versão. Para intenção de e-mail, salvar e reler antes do envio. Não aceita configurações ou segredos.',inputSchema:object({key:string,value:{},runId:string,operationId:string,expectedRevision:{type:'integer',minimum:0}},['key','value','runId','operationId','expectedRevision'])},
   {name:'office_lease',description:'Reserva, renova ou libera uma função. Não trabalhe se a reserva for negada. Renove antes de 25 minutos e libere no final. runId omitido em claim gera UUID.',inputSchema:object({action:{type:'string',enum:['claim','release']},task:{type:'string',enum:roles},runId:string},['action','task'])},
@@ -22,6 +26,11 @@ async function payload(request:Request){
 }
 async function documentCall(name:string,args:any,env:Cloudflare.Env,local:boolean){
   const db=env.DB!;
+  if(name==='office_domain_check')return checkMailDomain(args.domain);
+  if(name==='office_overview'){
+    const rows=await db.prepare('SELECT key,value,revision,updated_at AS updatedAt FROM office_documents WHERE key IN ('+overviewKeys.map(()=>'?').join(',')+')').bind(...overviewKeys).all();
+    return officeOverview(rows.results);
+  }
   if(name==='office_instructions'){
     const control=await db.prepare("SELECT value FROM office_documents WHERE key='system/control'").first<{value:string}>();
     return {instructions:cloudInstructions+'\n\nCONTRATO DOS EVENTOS\nOs nomes das reservas não são os nomes dos agentes no painel. Use eventContract.roleAgents para escolher agent e eventContract.codes para code. Uma rejeição de aprovação não autoriza repetir com outro nome ou ferramenta. Preserve o resultado privado e informe o bloqueio. Uma reserva ocupada é concorrência temporária, não motivo para desativar um agendamento.',eventContract:{agents,codes:Object.keys(actions),roleAgents:roleEventAgents,fields:['runId','id','agent','code','state','count']},control:control?JSON.parse(control.value):{executors:Object.fromEntries(roles.map(r=>[r,'local'])),migration:'not_ready'}};
