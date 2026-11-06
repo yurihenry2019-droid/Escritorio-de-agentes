@@ -19,7 +19,7 @@ export function planSupervision(rows,leases,now=new Date()) {
   if(overview.service.pendingInReviewedConversations>0)
     add('service-pending','service','pending_human_requests','Ler conversas pendentes, verificar se já foram atendidas e responder solicitações rotineiras com inReplyTo real, dentro da reserva e da cota.');
   if(!overview.mail.today.verifiedReport||overview.mail.today.remainingToGoal>0)
-    add('prospecting-goal','mail',overview.mail.today.verifiedReport?'daily_goal_incomplete':'daily_goal_unverified','Primeiro confirmar cotas nativas. Priorizar empresas de todo o Brasil com convite explícito a apresentações de fornecedores. Deduplicar empresa, domínio, aliases e histórico completo. Até 20 candidatos e 10 apresentações por execução; nunca ultrapassar 100 por dia nem a cota móvel.');
+    add('prospecting-goal','mail',overview.mail.today.verifiedReport?'daily_goal_incomplete':'daily_goal_unverified','Primeiro confirmar cotas nativas. Priorizar empresas de todo o Brasil com convite explícito a apresentações de fornecedores. Deduplicar empresa, domínio, aliases e histórico completo. Até 20 candidatos e 15 apresentações por execução; nunca ultrapassar 100 por dia nem a cota móvel.');
   const previous=parsed(rows.find(r=>r.key===queueKey));
   const prior=new Map((Array.isArray(previous.actions)?previous.actions:[]).map(a=>[a.id,a]));
   const actions=demands.map(a=>({...a,status:'pending',firstSeenAt:prior.get(a.id)?.status==='pending'?prior.get(a.id).firstSeenAt:now.toISOString(),lastObservedAt:now.toISOString()}));
